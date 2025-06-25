@@ -1,0 +1,133 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #f5f7fb;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Karla, sans-serif;
+  /* position: relative; */
+  overflow: hidden;
+}
+
+div.round-top {
+  width: 350px;
+  height: 250px;
+  background-color: #fff8c0;
+  position: fixed;
+  top: -50px;
+  right: -120px;
+  border-radius: 45%;
+  transform: rotateX(25deg);
+  transform: skewY(45deg);
+}
+
+main {
+  max-width: 550px;
+}
+
+div.round-bottom {
+  width: 240px;
+  height: 200px;
+  background-color: #b6daff;
+  position: fixed;
+  bottom: -50px;
+  left: -40px;
+  border-radius: 50%;
+  transform: rotateX(25deg);
+  transform: skewY(15deg);
+}
+
+section.intro {
+  max-width: 550px;
+  /* border: 1px solid purple; */
+  text-align: center;
+  /* padding: 10px; */
+}
+
+section.intro > h1 {
+  color: #293264;
+  font-weight: 700;
+  font-size: 31.25px;
+  line-height: 100%;
+  margin-bottom: 10px;
+}
+
+section.intro > p {
+  font-family: Inter, sans-serif;
+  color: #293264;
+  line-height: 100%;
+  font-weight: 400;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+section.intro > button {
+  background-color: #4d5b9e;
+  width: 193px;
+  height: 52px;
+  border-radius: 15px;
+  border: none;
+  font-family: Inter, sans-serif;
+  line-height: 100%;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  color: #f5f7fb;
+  cursor: pointer;
+}
+
+section.quiz {
+  max-width: 550px;
+  /* padding: 10px; */
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+section.quiz li.question {
+  list-style: none;
+  border-bottom: 1px solid #dbdef0;
+}
+
+section.quiz li.question > h3 {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 100%;
+  color: #293264;
+  margin-bottom: 15px;
+}
+
+section.quiz li.question > button {
+  color: #293264;
+  font-family: Inter, sans-serif;
+  font-size: 12.24px;
+  line-height: 100%;
+  text-align: center;
+  padding: 4px 14px;
+  border: 0.79px solid #4d5b9e;
+  border-radius: 8px;
+  margin-right: 12px;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+section.quiz button.check {
+  background-color: #4d5b9e;
+  border-radius: 10px;
+  font-family: Inter, sans-serif;
+  font-size: 12.24px;
+  font-weight: 600;
+  line-height: 100%;
+  margin: 15px auto 0px auto;
+  width: 126px;
+  color: #f5f7fb;
+  height: 35px;
+  border: none;
+}
