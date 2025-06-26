@@ -1,48 +1,81 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { decode } from "html-entities";
+import { clsx } from "clsx";
 
 export default function App() {
   const [isShow, setIsShow] = useState(false);
-  const data = [
-    {
-      question: "How would one say goodbye in Spanish?",
-      answers: ["Adiós", "Hola", "Au Revoir", "Salir"],
-    },
-    {
-      question:
-        "Which best selling toy of 1983 caused hysteria, resulting in riots breaking in stores?",
-      answers: [
-        "Cabbage Patch Kids",
-        "Transformers",
-        "Care Bears",
-        "Rubik's Cube",
-      ],
-    },
-    {
-      question: "What is the hottest planet in our Solar System?",
-      answers: ["Mercury", "Venus", "Mars", "Saturn"],
-    },
-    {
-      question: "In which country was the caesar salad invented?",
-      answers: ["Italy", "Portugal", "México", "France"],
-    },
-    {
-      question: "How Many Hearts Does An Octopus Have?",
-      answers: ["One", "Two", "Three", "Four"],
-    },
-  ];
+  const [data, setData] = useState([]);
+
+  const url = "https://opentdb.com/api.php?amount=5";
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Error de Red: ${response.status}`);
+        }
+        const dataInfo = await response.json();
+        setData(
+          dataInfo.results.map((item) => {
+            return { ...item, selected_answer: null };
+          })
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  console.log(data);
 
   function toggleQuiz() {
     setIsShow(!isShow);
   }
 
-  const renderData = data.map((item, index) => (
-    <li className="question" key={index}>
-      <h3>{item.question}</h3>
-      {item.answers.map((ans) => (
-        <button key={ans}>{ans}</button>
-      ))}
-    </li>
-  ));
+  function selectedAnswer(questionIndex, answerValue) {
+    setData((prevData) =>
+      prevData.map((item, index) => {
+        return questionIndex === index
+          ? { ...item, selected_answer: answerValue }
+          : item;
+      })
+    );
+  }
+
+  function checkAnswers() {
+    const filterAnswers = data.filter(
+      (dataObj) => dataObj.selected_answer === dataObj.correct_answer
+    );
+    return filterAnswers.length;
+  }
+
+  const renderData = data.map((item, index) => {
+    const answers = [...item.incorrect_answers, item.correct_answer];
+
+    return (
+      <li className="question" key={index}>
+        <h3>{decode(item.question)}</h3>
+        {answers.map((ans) => {
+          const buttonClasses = clsx({
+            selected: ans === item.selected_answer,
+          });
+
+          return (
+            <button
+              className={buttonClasses}
+              onClick={() => selectedAnswer(index, ans)}
+              key={ans}
+            >
+              {decode(ans)}
+            </button>
+          );
+        })}
+      </li>
+    );
+  });
 
   return (
     <>
@@ -61,9 +94,14 @@ export default function App() {
         {isShow && (
           <section className="quiz">
             {renderData}
-            <button className="check">Check Answers</button>
+            <button className="check" onClick={checkAnswers}>
+              Check Answers
+            </button>
           </section>
         )}
+        <section className="check">
+          You scored {checkAnswers()} / {data.length} correct answers{" "}
+        </section>
       </main>
     </>
   );

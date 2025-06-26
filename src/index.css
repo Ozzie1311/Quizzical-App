@@ -118,6 +118,11 @@ section.quiz li.question > button {
   cursor: pointer;
 }
 
+section.quiz li.question > button.selected {
+  background-color: #d6dbf5;
+  border: 1px solid #d6dbf5;
+}
+
 section.quiz button.check {
   background-color: #4d5b9e;
   border-radius: 10px;
@@ -130,4 +135,5 @@ section.quiz button.check {
   color: #f5f7fb;
   height: 35px;
   border: none;
+  cursor: pointer;
 }
