@@ -1,10 +1,16 @@
-import { useState, useEffect } from "react";
-import { decode } from "html-entities";
-import { clsx } from "clsx";
+import { useState, useEffect, useRef } from "react";
+import Quiz from "./Components/Quiz";
+import Intro from "./Components/Intro";
 
 export default function App() {
   const [isShow, setIsShow] = useState(false);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(() => []);
+  const [isFinished, setIsFinished] = useState(false);
+
+  //Derivated variables
+  const correctAnswerCount = data.filter(
+    (d) => d.selected_answer === d.correct_answer
+  ).length;
 
   const url = "https://opentdb.com/api.php?amount=5";
 
@@ -18,7 +24,13 @@ export default function App() {
         const dataInfo = await response.json();
         setData(
           dataInfo.results.map((item) => {
-            return { ...item, selected_answer: null };
+            const allAnswers = [...item.incorrect_answers, item.correct_answer];
+            const shuffledAnswers = allAnswers.sort(() => Math.random() - 0.5);
+            return {
+              ...item,
+              selected_answer: null,
+              all_answers: shuffledAnswers,
+            };
           })
         );
       } catch (err) {
@@ -27,82 +39,36 @@ export default function App() {
     }
 
     fetchData();
-  }, []);
-
-  console.log(data);
+  }, [isShow]);
 
   function toggleQuiz() {
     setIsShow(!isShow);
   }
 
-  function selectedAnswer(questionIndex, answerValue) {
-    setData((prevData) =>
-      prevData.map((item, index) => {
-        return questionIndex === index
-          ? { ...item, selected_answer: answerValue }
-          : item;
-      })
-    );
+  function handleCheckAnswers() {
+    setIsFinished(true);
   }
 
-  function checkAnswers() {
-    const filterAnswers = data.filter(
-      (dataObj) => dataObj.selected_answer === dataObj.correct_answer
-    );
-    return filterAnswers.length;
+  function handleResetGame() {
+    setIsShow(false);
+    setIsFinished(false);
   }
-
-  const renderData = data.map((item, index) => {
-    const answers = [...item.incorrect_answers, item.correct_answer];
-
-    return (
-      <li className="question" key={index}>
-        <h3>{decode(item.question)}</h3>
-        {answers.map((ans) => {
-          const buttonClasses = clsx({
-            selected: ans === item.selected_answer,
-          });
-
-          return (
-            <button
-              className={buttonClasses}
-              onClick={() => selectedAnswer(index, ans)}
-              key={ans}
-            >
-              {decode(ans)}
-            </button>
-          );
-        })}
-      </li>
-    );
-  });
 
   return (
-    <>
+    <main>
       <div className="round-top"></div>
       <div className="round-bottom"></div>
-      <main>
-        {!isShow && (
-          <section className="intro">
-            <h1>Quizzical</h1>
-            <p>Some description if needed</p>
-            <button className="start" onClick={toggleQuiz}>
-              Start quiz
-            </button>
-          </section>
-        )}
-        {isShow && (
-          <section className="quiz">
-            {renderData}
-            <button className="check" onClick={checkAnswers}>
-              Check Answers
-            </button>
-          </section>
-        )}
-        <section className="check">
-          You scored {checkAnswers()} / {data.length} correct answers{" "}
-        </section>
-      </main>
-    </>
+      {!isShow && <Intro toggleQuiz={toggleQuiz} />}
+      {isShow && (
+        <Quiz
+          setData={setData}
+          isFinished={isFinished}
+          handleCheckAnswers={handleCheckAnswers}
+          handleResetGame={handleResetGame}
+          correctAnswerCount={correctAnswerCount}
+          data={data}
+        />
+      )}
+    </main>
   );
 }
